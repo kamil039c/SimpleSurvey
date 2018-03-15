@@ -1,20 +1,122 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<title>Ankiety</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
 
-{% block title %}Hello {{ controller_name }}!{% endblock %}
+		<!-- jQuery library -->
+		<script src="/js/jquery.min.js"></script>
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+		<!-- Popper JS -->
+		<script src="/js/popper.min.js"></script>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>src/Controller/SurveyBundleController.php</code></li>
-        <li>Your template at <code>templates/survey_bundle/index.html.twig</code></li>
-    </ul>
-</div>
-{% endblock %}
+		<!-- Latest compiled JavaScript -->
+		<script src="/js/bootstrap.min.js"></script>
+	</head>
+    <body>
+		<div class="container-fluid">
+			<div class="row">
+			  <div class="col" style="background: rgb(80, 80, 80);">-</div>
+			</div>
+		
+			{% if user == null %}
+				<div class="row">
+					Panel logowania
+				</div>
+				
+				{{ form_start(form) }}
+					<div class="row">
+						{{ form_widget(form, { 'attr': {'class': 'form-control'} }) }}
+					</div>
+				{{ form_end(form) }}
+			{% else %}
+				<div class="row">
+					<div class="col-sm">
+						<label for="usr">Panel główny</label>
+					</div>
+				</div>
+				<div class="row" style="padding-right: 5px;">
+					<div class="col">
+						Witaj {{user.name}}! 
+					</div>
+					<div class="col-X-2">
+						<button type="button" class="btn btn-primary" onclick="window.location.replace('/survey_logout');">Wyloguj się</button>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm">
+						<label for="usr">Ankieta</label>
+					</div>
+				</div>
+				<form method="POST" action="/nextStepSurvey">
+					<div class="row">
+						{% if ankietaFaza != 0 %}
+						
+							{% if ankietaFaza != (iloscPytan + 1) %}
+								<div class="col-sm-X-2">
+									Pytanie nr {{ankietaFaza}} - {{ankieta.pytanie}}:
+								</div>
+								<div class="col-sm">
+									<input name="text" type="text" class="form-control">
+								</div>
+								<div class="col-sm">
+									<button type="submit" class="btn btn-primary">Następne pytanie</button>
+								</div>
+							{% else %}	
+								<div class="col-sm" style="padding: 5px; margin-left:8px;">
+									<button style="width: 30%;" type="submit" class="btn btn-primary">Dalej</button>
+								</div>
+							{% endif %}
+						
+						{% endif %}
+					</div>
+				</form>
+				<div class="row">
+					{% if ankietaFaza == 0 %}
+						<div class="col-sm">
+							<button type="button" class="btn btn-primary" onclick="window.location.replace('/startSurvey');">Rozpocznij ankietę</button>
+						</div>
+					{% else %}
+						<div class="col-sm">
+							<button type="button" class="btn btn-primary" onclick="window.location.replace('/abortSurvey');">Anuluj wypełnienie ankiety</button>
+						</div>
+					{% endif %}
+				</div>
+				<div class="row">
+					<div class="col-sm">
+						<label for="usr">Twoje ankiety</label>
+					</div>
+				</div>
+				
+				{% if ankiety|length > 0 %}
+					<div class="table-responsive-sm">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									{% for key, value in ankiety.0 %}
+										<th>{{key}}</th>
+									{% endfor %}
+								</tr>
+							</thead>
+							<tbody>
+								{% for _ankieta in ankiety %}
+									<tr>
+										{% for value in _ankieta %}
+											<td>{{value}}</td>
+										{% endfor %}
+									</tr>	
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+			{% endif %}
+		</div>
+	</body>
+</html>

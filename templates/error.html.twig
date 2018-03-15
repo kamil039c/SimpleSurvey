@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+	<head>
+		<title>Błąd</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+		<!-- jQuery library -->
+		<script src="/js/jquery.min.js"></script>
+
+		<!-- Popper JS -->
+		<script src="/js/popper.min.js"></script>
+
+		<!-- Latest compiled JavaScript -->
+		<script src="/js/bootstrap.min.js"></script>
+	</head>
+    <body style="text-align: center;" class="centered">
+		<div class="container-fluid">
+			<div class="col" style="height: 50px;"> </div>
+		</div>
+		
+			<div class="row">
+				<div class="col" style="background: rgb(100, 100, 100);">
+					<p class="text-danger" style="font-weight: bold;">Wystąpił błąd!</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="background: rgb(100, 100, 100);">
+					<div class="alert alert-danger alert-dismissable fade show">
+						{{ msg }}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col" style="background: rgb(100, 100, 100);">
+					<button type="button" class="btn btn-primary" onclick="window.location.replace('/');">Powrót</button>
+				</div>
+			</div>
+		
+	</body>
+</html>
