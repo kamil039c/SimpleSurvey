@@ -1,0 +1,8 @@
+index:
+    path: /
+    controller: App\Controller\SurveyBundleController::index
+
+admin:
+    path: admin/
+    controller: App\Controller\AdminBundleController::index
+
