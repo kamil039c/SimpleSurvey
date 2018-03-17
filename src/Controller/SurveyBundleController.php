@@ -1,27 +1,33 @@
 <?php
 namespace App\Controller;
 
-require("../src/Utils/PasswordUtil.php");
-require("../src/Utils/SurveyTemplates.php");
-
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Driver\Connection;
-use \App\Utils\PasswordUtil;
-use \App\Utils\SurveyTemplates;
-use PDO;
 
-use App\Entity\Ankieta;
+use App\Utils\PasswordUtil;
+use App\Utils\SurveyTemplates;
+
+use App\Entity\Survey;
 use App\Entity\User;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+
+use PDO;
+
 class SurveyBundleController extends Controller {
 	private $db = null;
+	private $session = null;
+	
+	public function __construct() {
+		$this->session = new Session();
+	}
 	
 	private function checkDB() {
 		if ($this->db->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table'")->fetch(PDO::FETCH_NUM)[0] > 0) {
@@ -72,16 +78,17 @@ class SurveyBundleController extends Controller {
 	}
 	
 	private function getSurveyUser() {
-		if (empty($_SESSION['uid']) || empty($_SESSION['token'])) return null;
+		if (empty($this->session->get('uid')) || empty($this->session->get('token'))) return null;
 		
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery("SELECT u FROM App\Entity\User u WHERE u.id = ?1 AND u.session_token = ?2");
-		$query->setParameter(1, $_SESSION['uid']);
-		$query->setParameter(2, $_SESSION['token']);
+		$query->setParameter(1, $this->session->get('uid'));
+		$query->setParameter(2, $this->session->get('token'));
 		$user = $query->getResult();
 		
 		if (count($user) == 0) {
 			session_destroy();
+			$this->session->invalidate();
 			return null;
 		}
 		
@@ -102,21 +109,20 @@ class SurveyBundleController extends Controller {
 		$this->db = $db;
 		$this->checkDB();
 		
-		$ankietaFaza = 0;
-		$ankieta = null;
-		$ankiety = [];
+		$surveyPhase = 0;
+		$survey = null;
+		$userSurveys = [];
 		
-		if (($zalogowanyUser = $this->getSurveyUser()) != null) {
-			$ankietaFaza = (int)$_SESSION['ankietaFaza'];
-			if (isset(SurveyTemplates::$questions[$ankietaFaza - 1])) $ankieta = SurveyTemplates::$questions[$ankietaFaza - 1];
+		if (($loggedInUser = $this->getSurveyUser()) != null) {
+			$surveyPhase = (int)$this->session->get('surveyPhase');
+			if (isset(SurveyTemplates::$questions[$surveyPhase - 1])) $survey = SurveyTemplates::$questions[$surveyPhase - 1];
 			
 			$em = $this->getDoctrine()->getManager();
-			$query = $em->createQuery("SELECT u FROM App\Entity\Ankieta u WHERE u.uid = ?1");
-			$query->setParameter(1, $zalogowanyUser['id']);
-			//print_r($query->getResult());
-			//exit;
+			$query = $em->createQuery("SELECT u FROM App\Entity\Survey u WHERE u.uid = ?1");
+			$query->setParameter(1, $loggedInUser['id']);
+			
 			foreach ($query->getResult() as $a) {
-				if (isset($a)) $ankiety[] = $a->getRow();
+				if (isset($a)) $userSurveys[] = $a->getRow();
 			}
 		}
 		
@@ -133,8 +139,8 @@ class SurveyBundleController extends Controller {
         return $this->render(
 			'survey_bundle/index.html.twig', 
 			[
-				'form' => $form->createView(), 'user' => $zalogowanyUser, 'ankietaFaza' => $ankietaFaza, 'ankieta' => $ankieta, 
-				'iloscPytan' => count(SurveyTemplates::$questions), 'ankiety' => $ankiety
+				'loginForm' => $form->createView(), 'user' => $loggedInUser, 'surveyPhase' => $surveyPhase, 'survey' => $survey, 
+				'qestionsCount' => count(SurveyTemplates::$questions), 'userSurveys' => $userSurveys
 			]
 		);
     }
@@ -167,11 +173,10 @@ class SurveyBundleController extends Controller {
 			return $this->render('error.html.twig', ['msg' => 'Autentykacja nie powiodła się!']);
 		}
 		
-		session_start();
-		
-		$_SESSION['uid'] = $row['id'];
-		$_SESSION['token'] = $row['session_token'];
-		$_SESSION['ankietaFaza'] = 0;
+		//$this->session->start();
+		$this->session->set('uid', $row['id']);
+		$this->session->set('token', $row['session_token']);
+		$this->session->set('surveyPhase', 0);
 		
 		return $this->redirectToRoute('index', array(), 301);
 	}
@@ -181,7 +186,7 @@ class SurveyBundleController extends Controller {
     */
 	
 	public function survey_logout(Request $request) {
-		session_destroy();
+		$this->session->invalidate();
 		return $this->redirectToRoute('index', array(), 301);
 	}
 	
@@ -194,11 +199,11 @@ class SurveyBundleController extends Controller {
 			return $this->render('error.html.twig', ['msg' => 'Brak autoryzacji!']);
 		}
 		
-		if ($_SESSION['ankietaFaza'] != 0) {
+		if ($this->session->get('surveyPhase') != 0) {
 			return $this->render('error.html.twig', ['msg' => 'Ankieta została rozpoczęta!']);
 		}
 		
-		$_SESSION['ankietaFaza'] = 1;
+		$this->session->set('surveyPhase', 1);
 		return $this->redirectToRoute('index', array(), 301);
 	}
 	
@@ -211,12 +216,12 @@ class SurveyBundleController extends Controller {
 			return $this->render('error.html.twig', ['msg' => 'Brak autoryzacji!']);
 		}
 		
-		if ($_SESSION['ankietaFaza'] == 0) {
+		if ($this->session->get('surveyPhase') == 0) {
 			return $this->render('error.html.twig', ['msg' => 'Ankieta nie została rozpoczęta!']);
 		}
 		
-		$_SESSION['ankietaFaza'] = 0;
-		foreach(SurveyTemplates::$questions as $question) $_SESSION[$question['klucz']] = "";
+		$this->session->set('surveyPhase', 0);
+		foreach(SurveyTemplates::$questions as $question) $this->session->set($question['key'], "");
 		return $this->redirectToRoute('index', array(), 301);
 	}
 	
@@ -229,23 +234,23 @@ class SurveyBundleController extends Controller {
 			return $this->render('error.html.twig', ['msg' => 'Brak autoryzacji!']);
 		}
 		
-		if ($_SESSION['ankietaFaza'] == 0) {
+		if ($this->session->get('surveyPhase') == 0) {
 			return $this->render('error.html.twig', ['msg' => 'Ankieta nie została rozpoczęta!']);
 		}
 		
-		if ($_SESSION['ankietaFaza'] == 4) {
-			$_SESSION['ankietaFaza'] = 0;
+		if ($this->session->get('surveyPhase') == 4) {
+			$this->session->set('surveyPhase', 0);
 			
-			$ankieta = new Ankieta();
-			$ankieta->set('uid', $user['id']);
+			$survey = new Survey();
+			$survey->set('uid', $user['id']);
 			
-			foreach(SurveyTemplates::$questions as $pytanie) {
-				$ankieta->set($pytanie['field'], $pytanie['isint'] ? (int)$_SESSION[$pytanie['klucz']] : (string)$_SESSION[$pytanie['klucz']]);
-				$_SESSION[$pytanie['klucz']] = "";
+			foreach(SurveyTemplates::$questions as $question) {
+				$survey->set($question['field'], $question['isint'] ? (int)$this->session->get($question['key']) : (string)$this->session->get($question['key']));
+				$this->session->set($question['key'], "");
 			}
 			
 			$em = $this->getDoctrine()->getManager();
-			$em->persist($ankieta);
+			$em->persist($survey);
 			$em->flush();
 			
 			return $this->redirectToRoute('index', array(), 301);
@@ -255,8 +260,8 @@ class SurveyBundleController extends Controller {
 			return $this->render('error.html.twig', ['msg' => 'Musisz coś wpisać, aby kontynuować']);
 		}
 		
-		$_SESSION[SurveyTemplates::$questions[$_SESSION['ankietaFaza'] - 1]['klucz']] = $request->request->get('text');
-		$_SESSION['ankietaFaza']++;
+		$this->session->set(SurveyTemplates::$questions[$this->session->get('surveyPhase') - 1]['key'], $request->request->get('text'));
+		$this->session->set('surveyPhase', $this->session->get('surveyPhase') + 1);
 		
 		return $this->redirectToRoute('index', array(), 301);
 	}

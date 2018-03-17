@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Ankieta;
+use App\Entity\Survey;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -16,7 +16,7 @@ class AnkietaRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, Ankieta::class);
+        parent::__construct($registry, Survey::class);
     }
 
     /*

@@ -4,7 +4,7 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Ankieta;
+use App\Entity\Survey;
 use App\Entity\User;
 
 class AdminBundleController extends Controller
@@ -18,33 +18,36 @@ class AdminBundleController extends Controller
 		$qb = $em->createQueryBuilder();
 		
 		$qb->select('count(u.id)');
-		$qb->from('App\Entity\Ankieta','u');
-		$ankietyIlosc = $qb->getQuery()->getSingleScalarResult();
+		$qb->from('App\Entity\Survey','u');
+		$totalSurveysCount = $qb->getQuery()->getSingleScalarResult();
 		
-		$ankietyNaStrone = 10;
-		$strony = ceil($ankietyIlosc / $ankietyNaStrone) - 1;
-		if ($strony < 0) $strony = 0;
+		$surveysPerPage = 10;
+		$pages = ceil($totalSurveysCount / $surveysPerPage) - 1;
+		if ($pages < 0) $pages = 0;
 		
-		$strona = (int)$request->query->get('page');
-		if ($strona < 0) $strona = 0;
-		if ($strona > $strony) $strona = $strony;
+		$page = (int)$request->query->get('page');
+		if ($page < 0) $page = 0;
+		if ($page > $pages) $page = $pages;
 		
 		$sortBY = (string)$request->query->get('sortby');
 		if (empty($sortBY)) $sortBY = 'id';
 		
 		$qb = $em->createQueryBuilder();
 		$qb->select('u');
-		$qb->setFirstResult( $ankietyNaStrone * $strona );
+		$qb->setFirstResult( $surveysPerPage * $page );
 		$qb->add('orderBy', 'u.' . $sortBY . ' ASC');
-		$qb->setMaxResults( $ankietyNaStrone );
+		$qb->setMaxResults( $surveysPerPage );
 		
-		$qb->from('App\Entity\Ankieta','u');
+		$qb->from('App\Entity\Survey','u');
 		
-		$ankiety = [];
-		foreach ($qb->getQuery()->getResult() as $ankieta) {
-			if (isset($ankieta)) $ankiety[] = $ankieta->getRow();
+		$surveys = [];
+		foreach ($qb->getQuery()->getResult() as $survey) {
+			if (isset($survey)) $surveys[] = $survey->getRow();
 		}
 		
-		return $this->render('admin_bundle/index.html.twig', ['ankiety' => $ankiety, 'iloscAnkiet' => $ankietyIlosc ,'sortby' => $sortBY, 'strony' => $strony, 'strona' => $strona]);
+		return $this->render('admin_bundle/index.html.twig', [
+			'surveys' => $surveys, 'totalSurveysCount' => $totalSurveysCount,
+			'sortby' => $sortBY, 'pages' => $pages, 'page' => $page
+		]);
     }
 }

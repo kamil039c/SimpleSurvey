@@ -29,11 +29,11 @@
 					Panel logowania
 				</div>
 				
-				{{ form_start(form) }}
+				{{ form_start(loginForm) }}
 					<div class="row">
-						{{ form_widget(form, { 'attr': {'class': 'form-control'} }) }}
+						{{ form_widget(loginForm, { 'attr': {'class': 'form-control'} }) }}
 					</div>
-				{{ form_end(form) }}
+				{{ form_end(loginForm) }}
 			{% else %}
 				<div class="row">
 					<div class="col-sm">
@@ -56,11 +56,11 @@
 				</div>
 				<form method="POST" action="/nextStepSurvey">
 					<div class="row">
-						{% if ankietaFaza != 0 %}
+						{% if surveyPhase != 0 %}
 						
-							{% if ankietaFaza != (iloscPytan + 1) %}
+							{% if surveyPhase != (qestionsCount + 1) %}
 								<div class="col-sm-X-2">
-									Pytanie nr {{ankietaFaza}} - {{ankieta.pytanie}}:
+									Pytanie nr {{surveyPhase}} - {{survey.pytanie}}:
 								</div>
 								<div class="col-sm">
 									<input name="text" type="text" class="form-control">
@@ -78,7 +78,7 @@
 					</div>
 				</form>
 				<div class="row">
-					{% if ankietaFaza == 0 %}
+					{% if surveyPhase == 0 %}
 						<div class="col-sm">
 							<button type="button" class="btn btn-primary" onclick="window.location.replace('/startSurvey');">Rozpocznij ankietę</button>
 						</div>
@@ -94,20 +94,20 @@
 					</div>
 				</div>
 				
-				{% if ankiety|length > 0 %}
+				{% if userSurveys|length > 0 %}
 					<div class="table-responsive-sm">
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									{% for key, value in ankiety.0 %}
+									{% for key, value in userSurveys.0 %}
 										<th>{{key}}</th>
 									{% endfor %}
 								</tr>
 							</thead>
 							<tbody>
-								{% for _ankieta in ankiety %}
+								{% for srv in userSurveys %}
 									<tr>
-										{% for value in _ankieta %}
+										{% for value in srv %}
 											<td>{{value}}</td>
 										{% endfor %}
 									</tr>	

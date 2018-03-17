@@ -32,6 +32,10 @@ class User
      */
     private $session_token;
 	
+	public function __construct(array $values = []) {
+		foreach ($values as $key => $value) $this->$key = $value;
+	}
+	
 	public function set(string $key, $value) {
 		$this->$key = $value;
 	}

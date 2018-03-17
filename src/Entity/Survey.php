@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="ankiety")
  * @ORM\Entity(repositoryClass="App\Repository\AnkietaRepository")
  */
-class Ankieta
+class Survey
 {
     /**
      * @ORM\Id
@@ -36,6 +36,10 @@ class Ankieta
      * @ORM\Column(type="integer", name="wiek")
      */
     private $age;
+	
+	public function __construct(array $values = []) {
+		foreach ($values as $key => $value) $this->$key = $value;
+	}
 	
 	public function set(string $key, $value) {
 		$this->$key = $value;
