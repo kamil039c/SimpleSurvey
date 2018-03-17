@@ -5,6 +5,7 @@
 /var/
 /vendor/
 db.sql
+/config/
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-pack ###
