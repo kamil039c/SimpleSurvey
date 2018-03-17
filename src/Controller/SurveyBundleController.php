@@ -29,54 +29,6 @@ class SurveyBundleController extends Controller {
 		$this->session = new Session();
 	}
 	
-	private function checkDB() {
-		if ($this->db->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table'")->fetch(PDO::FETCH_NUM)[0] > 0) {
-			return true;
-		}
-		
-		try {
-			$this->db->beginTransaction();
-			
-			$this->db->exec("CREATE TABLE `ankiety` (
-				`id` INTEGER AUTO_INCREMENT,
-				`uid` INTEGER,
-				`imie` varchar(50),
-				`nazwisko` varchar(50),
-				`wiek` INTEGER
-			)");
-		
-			$this->db->exec("CREATE TABLE `users` (
-				`id` INTEGER AUTO_INCREMENT,
-				`name` varchar(50),
-				`pwd` varchar(60),
-				`session_token` varchar(8) DEFAULT 'abcd7654'
-			)");
-			
-			$imiona = ["mariusz","mateusz","franio","bogusław","mietek","wiesio","łukasz","sebastian"];
-			$nazwiska = ["kowalski","nowak","cieplak","marczuk","kowalik","niegłowski","ćwierkacz"];
-		
-			for ($i = 0; $i < 50; $i++) {
-				$this->db->query("INSERT INTO ankiety(uid,imie,nazwisko,wiek) VALUES("
-					.mt_rand(1,7).",'".$imiona[mt_rand(0, count($imiona) - 1)]."','".$nazwiska[mt_rand(0, count($nazwiska) - 1)]."',".mt_rand(17,66).")");
-			}
-			
-			$this->db->exec("INSERT INTO `users` (`id`, `name`, `pwd`, `session_token`) VALUES
-				(1, 'kamil', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(2, 'franek', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(3, 'marian', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(4, 'malgoska', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(5, 'kaska', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(6, 'mateusz', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654'),
-				(7, 'adam', '" . PasswordUtil::hashPw('123456') . "', 'abcd7654')");
-			
-			$this->db->commit();
-		} catch(PDOException $e) {
-			die($e->getMessage());
-		}
-		
-		return true;
-	}
-	
 	private function getSurveyUser() {
 		if (empty($this->session->get('uid')) || empty($this->session->get('token'))) return null;
 		
@@ -99,16 +51,7 @@ class SurveyBundleController extends Controller {
      * @Route("/index", name="index")
      */
 	 
-    public function index(Request $request, Connection $db) {
-		if (!isset($db)) {
-			return $this->render('error.html.twig', [
-				'msg' => 'Nie można nawiązać połączenia z bazą danych'
-			]);
-		}
-		
-		$this->db = $db;
-		$this->checkDB();
-		
+    public function index(Request $request) {
 		$surveyPhase = 0;
 		$survey = null;
 		$userSurveys = [];
