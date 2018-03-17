@@ -4,8 +4,8 @@ namespace App\Acme\AdminBundle\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Survey;
-use App\Entity\User;
+use App\Acme\SurveyBundle\Entity\Survey;
+use App\Acme\SurveyBundle\Entity\User;
 
 class AdminController extends Controller {
 	/**
@@ -18,7 +18,7 @@ class AdminController extends Controller {
 		$qb = $em->createQueryBuilder();
 		
 		$qb->select('count(u.id)');
-		$qb->from('App\Entity\Survey','u');
+		$qb->from('App\Acme\SurveyBundle\Entity\Survey','u');
 		$totalSurveysCount = $qb->getQuery()->getSingleScalarResult();
 		
 		$surveysPerPage = 10;
@@ -38,7 +38,7 @@ class AdminController extends Controller {
 		$qb->add('orderBy', 'u.' . $sortBY . ' ASC');
 		$qb->setMaxResults( $surveysPerPage );
 		
-		$qb->from('App\Entity\Survey','u');
+		$qb->from('App\Acme\SurveyBundle\Entity\Survey','u');
 		
 		$surveys = [];
 		foreach ($qb->getQuery()->getResult() as $survey) {

@@ -13,32 +13,6 @@ class testData extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-		//Struktura db:
-		/*
-		try {
-			$this->db->beginTransaction();
-			
-			$this->db->exec("CREATE TABLE `ankiety` (
-				`id` INTEGER AUTO_INCREMENT,
-				`uid` INTEGER,
-				`imie` varchar(50),
-				`nazwisko` varchar(50),
-				`wiek` INTEGER
-			)");
-		
-			$this->db->exec("CREATE TABLE `users` (
-				`id` INTEGER AUTO_INCREMENT,
-				`name` varchar(50),
-				`pwd` varchar(60),
-				`session_token` varchar(8) DEFAULT 'abcd7654'
-			)");
-			$this->db->commit();
-		} catch(PDOException $e) {
-			die('B³¹d: ' . $e->getMessage());
-		}
-		*/
-		
-		//Dodaj testowych userów:
 		$pwd = PasswordUtil::hashPw('123456');
 		$st = 'gqds1287';
 		
@@ -53,16 +27,15 @@ class testData extends Fixture
 		
 		$countUsers = count($users);
 		
-		//Dodaj testowe ankiety
-		$imiona = ["mariusz","mateusz","franio","bogus³aw","mietek","wiesio","³ukasz","sebastian"];
-		$nazwiska = ["kowalski","nowak","cieplak","marczuk","kowalik","nieg³owski","æwierkacz"];
+		$names = ["mariusz","mateusz","franio","bogusÅ‚aw","mietek","wiesio","Å‚ukasz","sebastian"];
+		$surnames = ["kowalski","nowak","cieplak","marczuk","kowalik","niegÅ‚owski","Ä‡wierkacz"];
 		
 		for ($i = 0; $i < 50; $i++) {
 			$manager->persist(
 				new Survey([
 					'uid' => mt_rand(1, $countUsers), 
-					'name' => $imiona[mt_rand(0, count($imiona) - 1)],
-					'surname' => $nazwiska[mt_rand(0, count($nazwiska) - 1)],
+					'name' => $names[mt_rand(0, count($names) - 1)],
+					'surname' => $surnames[mt_rand(0, count($surnames) - 1)],
 					'age' => mt_rand(10,90)
 				])
 			);

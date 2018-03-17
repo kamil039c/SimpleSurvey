@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Acme\SurveyBundle\Repository;
 
 use App\Entity\Survey;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -12,23 +12,10 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Ankieta[]    findAll()
  * @method Ankieta[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AnkietaRepository extends ServiceEntityRepository
+class SurveyRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Survey::class);
     }
-
-    /*
-    public function findBySomething($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->where('a.something = :value')->setParameter('value', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 }

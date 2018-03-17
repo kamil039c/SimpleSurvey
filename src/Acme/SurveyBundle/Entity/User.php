@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Entity;
+namespace App\Acme\SurveyBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="ankiety")
- * @ORM\Entity(repositoryClass="App\Repository\AnkietaRepository")
+ * @ORM\Table(name="users")
+ * @ORM\Entity(repositoryClass="App\Acme\SurveyBundle\Repository\UserRepository")
  */
-class Survey
+class User
 {
     /**
      * @ORM\Id
@@ -18,24 +18,19 @@ class Survey
     private $id;
 	
 	/**
-     * @ORM\Column(type="integer", name="uid")
-     */
-    private $uid;
-	
-	/**
-     * @ORM\Column(type="string", name="imie", length=50)
+     * @ORM\Column(type="string", name="name", length=60)
      */
     private $name;
 	
 	/**
-     * @ORM\Column(type="string", name="nazwisko", length=50)
+     * @ORM\Column(type="string", name="pwd", length=60)
      */
-    private $surname;
+    private $pwd;
 
     /**
-     * @ORM\Column(type="integer", name="wiek")
+     * @ORM\Column(type="string", name="session_token", length=8)
      */
-    private $age;
+    private $session_token;
 	
 	public function __construct(array $values = []) {
 		foreach ($values as $key => $value) $this->$key = $value;
@@ -53,13 +48,20 @@ class Survey
 		return $this->$key;
 	}
 	
+	public function getName() {
+		$this->name;
+	}
+	
+	public function getPwd() {
+		$this->pwd;
+	}
+	
 	public function getRow() {
 		return [
 			'id' => $this->id,
-			'uid' => $this->uid,
 			'name' => $this->name,
-			'surname' => $this->surname,
-			'age' => $this->age
+			'pwd' => $this->pwd,
+			'session_token' => $this->session_token,
 		];
 	}
 }

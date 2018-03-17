@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Acme\AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="App\Acme\AdminBundle\Repository\UserRepository")
  */
 class User
 {

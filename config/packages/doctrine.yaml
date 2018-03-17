@@ -19,9 +19,24 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         mappings:
-            App:
+            #App:
+            #    is_bundle: false
+            #    type: annotation
+            #    dir: '%kernel.project_dir%/src/Entity'
+            #    prefix: 'App\Entity'
+            #    alias: App
+                
+            App\Acme\SurveyBundle:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
+                dir: '%kernel.project_dir%/src/Acme/SurveyBundle/Entity'
+                prefix: 'App\Acme\SurveyBundle'
+                alias: SurveyBundle
+                
+            
+            App\Acme\AdminBundle:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Acme/AdminBundle/Entity'
+                prefix: 'App\Acme\AdminBundle'
+                alias: AdminBundle

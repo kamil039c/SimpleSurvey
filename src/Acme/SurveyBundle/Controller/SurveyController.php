@@ -6,8 +6,8 @@ use Doctrine\DBAL\Driver\Connection;
 use App\Utils\PasswordUtil;
 use App\Utils\SurveyTemplates;
 
-use App\Entity\Survey;
-use App\Entity\User;
+use App\Acme\SurveyBundle\Entity\Survey;
+use App\Acme\SurveyBundle\Entity\User;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -34,7 +34,7 @@ class SurveyController extends Controller {
 		if (empty($this->session->get('uid')) || empty($this->session->get('token'))) return null;
 		
 		$em = $this->getDoctrine()->getManager();
-		$query = $em->createQuery("SELECT u FROM App\Entity\User u WHERE u.id = ?1 AND u.session_token = ?2");
+		$query = $em->createQuery("SELECT u FROM App\Acme\SurveyBundle\Entity\User u WHERE u.id = ?1 AND u.session_token = ?2");
 		$query->setParameter(1, $this->session->get('uid'));
 		$query->setParameter(2, $this->session->get('token'));
 		$user = $query->getResult();
@@ -62,7 +62,7 @@ class SurveyController extends Controller {
 			if (isset(SurveyTemplates::$questions[$surveyPhase - 1])) $survey = SurveyTemplates::$questions[$surveyPhase - 1];
 			
 			$em = $this->getDoctrine()->getManager();
-			$query = $em->createQuery("SELECT u FROM App\Entity\Survey u WHERE u.uid = ?1");
+			$query = $em->createQuery("SELECT u FROM App\Acme\SurveyBundle\Entity\Survey u WHERE u.uid = ?1");
 			$query->setParameter(1, $loggedInUser['id']);
 			
 			foreach ($query->getResult() as $a) {
@@ -100,7 +100,7 @@ class SurveyController extends Controller {
 		}
 		
 		$em = $this->getDoctrine()->getManager();
-		$query = $em->createQuery("SELECT u FROM App\Entity\User u WHERE u.name = ?1");
+		$query = $em->createQuery("SELECT u FROM User u WHERE u.name = ?1");
 		$query->setParameter(1, $form['name']);
 		$user = $query->getResult();
 		
