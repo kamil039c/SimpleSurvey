@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller;
+namespace App\Acme\SurveyBundle\Controller;
 
 use Doctrine\DBAL\Driver\Connection;
 
@@ -18,15 +18,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-use PDO;
-
-class SurveyBundleController extends Controller {
+class SurveyController extends Controller {
 	private $db = null;
 	private $session = null;
+	private $router;
 	
-	public function __construct() {
+	public function __construct(UrlGeneratorInterface $router) {
 		$this->session = new Session();
+		$this->router = $router;
 	}
 	
 	private function getSurveyUser() {
@@ -48,7 +49,7 @@ class SurveyBundleController extends Controller {
 	}
 	
     /**
-     * @Route("/index", name="index")
+     * @Route("/", name="home_page")
      */
 	 
     public function index(Request $request) {
@@ -87,10 +88,10 @@ class SurveyBundleController extends Controller {
 			]
 		);
     }
-	
+	 
 	/**
-    * @Route("/login", methods="POST", name="r_login")
-    */
+     * @Route("/login", methods="POST", name="r_login")
+     */
 	
 	public function login(Request $request) {
 		$form = $request->request->get('form');
@@ -121,7 +122,7 @@ class SurveyBundleController extends Controller {
 		$this->session->set('token', $row['session_token']);
 		$this->session->set('surveyPhase', 0);
 		
-		return $this->redirectToRoute('index', array(), 301);
+		return $this->redirectToRoute('home_page', array(), 301);
 	}
 	
 	/**
@@ -130,7 +131,7 @@ class SurveyBundleController extends Controller {
 	
 	public function survey_logout(Request $request) {
 		$this->session->invalidate();
-		return $this->redirectToRoute('index', array(), 301);
+		return $this->redirectToRoute('home_page', array(), 301);
 	}
 	
 	/**
@@ -147,7 +148,7 @@ class SurveyBundleController extends Controller {
 		}
 		
 		$this->session->set('surveyPhase', 1);
-		return $this->redirectToRoute('index', array(), 301);
+		return $this->redirectToRoute('home_page', array(), 301);
 	}
 	
 	/**
@@ -165,7 +166,7 @@ class SurveyBundleController extends Controller {
 		
 		$this->session->set('surveyPhase', 0);
 		foreach(SurveyTemplates::$questions as $question) $this->session->set($question['key'], "");
-		return $this->redirectToRoute('index', array(), 301);
+		return $this->redirectToRoute('home_page', array(), 301);
 	}
 	
 	/**
@@ -196,7 +197,7 @@ class SurveyBundleController extends Controller {
 			$em->persist($survey);
 			$em->flush();
 			
-			return $this->redirectToRoute('index', array(), 301);
+			return $this->redirectToRoute('home_page', array(), 301);
 		}
 		
 		if (empty($request->request->get('text'))) {
@@ -206,7 +207,7 @@ class SurveyBundleController extends Controller {
 		$this->session->set(SurveyTemplates::$questions[$this->session->get('surveyPhase') - 1]['key'], $request->request->get('text'));
 		$this->session->set('surveyPhase', $this->session->get('surveyPhase') + 1);
 		
-		return $this->redirectToRoute('index', array(), 301);
+		return $this->redirectToRoute('home_page', array(), 301);
 	}
 }
 ?>

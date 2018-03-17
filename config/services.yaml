@@ -18,11 +18,13 @@ services:
         resource: '../src/*'
         exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    
+    App\Acme\SurveyBundle\Controller\:
+        resource: '@SurveyBundle/Controller'
+        tags: ['controller.service_arguments']
+        
+    App\Acme\AdminBundle\Controller\:
+        resource: '@AdminBundle/Controller'
+        tags: ['controller.service_arguments']

@@ -16,4 +16,5 @@ return [
     Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
 	App\Acme\SurveyBundle\SurveyBundle::class => ['all' => true],
+	App\Acme\AdminBundle\AdminBundle::class => ['all' => true],
 ];

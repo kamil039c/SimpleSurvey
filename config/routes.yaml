@@ -1,8 +1,15 @@
 index:
     path: /
-    controller: App\Controller\SurveyBundleController::index
+    controller: App\Acme\SurveyBundle\Controller\SurveyController::index
 
 admin:
     path: admin/
-    controller: App\Controller\AdminBundleController::index
+    controller: App\Acme\AdminBundle\Controller\AdminController::index
 
+App\Acme\SurveyBundle\Controller\:
+    resource: '@SurveyBundle/Controller'
+    type: annotation
+        
+App\Acme\AdminBundle\Controller\:
+    resource: '@AdminBundle/Controller'
+    type: annotation

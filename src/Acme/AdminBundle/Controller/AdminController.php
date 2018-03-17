@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller;
+namespace App\Acme\AdminBundle\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -7,11 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Survey;
 use App\Entity\User;
 
-class AdminBundleController extends Controller
-{
-    /**
-     * @Route("/admin/bundle", name="admin_bundle")
+class AdminController extends Controller {
+	/**
+     * @Route("/index", name="index")
      */
+	 
     public function index(Request $request)
     {
 		$em = $this->getDoctrine()->getManager();
@@ -51,3 +51,4 @@ class AdminBundleController extends Controller
 		]);
     }
 }
+?>

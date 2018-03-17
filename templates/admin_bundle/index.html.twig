@@ -1,68 +1,48 @@
-<!DOCTYPE html>
-<html lang="pl">
-	<head>
-		<title>Ankiety</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="Content-Style-Type" content="text/css">
+{% extends "base.html.twig" %}
+{% block body %}
+	<div class="row">
+		<div class="col" style="background: rgb(80, 80, 80);">-</div>
+	</div>
+
+	<div class="row">
+		Panel administracyjny, {{totalSurveysCount}} ankiet
+	</div>
 		
-		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="/css/bootstrap.min.css">
-
-		<!-- jQuery library -->
-		<script src="/js/jquery.min.js"></script>
-
-		<!-- Popper JS -->
-		<script src="/js/popper.min.js"></script>
-
-		<!-- Latest compiled JavaScript -->
-		<script src="/js/bootstrap.min.js"></script>
-	</head>
-    <body>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col" style="background: rgb(80, 80, 80);">-</div>
-			</div>
-			<div class="row">
-				Panel administracyjny, {{totalSurveysCount}} ankiet
-			</div>
-			<div class="row">
-				Kliknięcie na kolumnę sortuje po danym polu
-			</div>
-			
-			<div class="row">
-				{% for i in range(0, pages) %}
-					<button style="margin: 3px;" type="button" class="btn{% if i != page %} btn-primary{% endif %}" onclick="window.location.replace('/admin/?sortby={{sortby}}&page={{i}}');">{{i}}</button>
-				{% endfor %}
-			</div>
-			
-			{% if surveys|length > 0 %}
-				<div class="table-responsive-sm">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								{% for key, value in surveys.0 %}
-									<th><span title="kliknij aby posortować" style="cursor: pointer;" onclick="window.location.replace('/admin/?sortby={{key}}&page={{page}}');">
-										{{key}}
-										{% if key == sortby %}
-											[sort rosnący]
-										{% endif %}
-									</span></th>
-								{% endfor %}
-							</tr>
-						</thead>
-						<tbody>
-							{% for srv in surveys %}
-								<tr>
-									{% for value in srv %}
-										<td>{{value}}</td>
-									{% endfor %}
-								</tr>	
+	<div class="row">
+		Kliknięcie na kolumnę sortuje po danym polu
+	</div>
+				
+	<div class="row">
+		{% for i in range(0, pages) %}
+			<button style="margin: 3px;" type="button" class="btn{% if i != page %} btn-primary{% endif %}" onclick="window.location.replace('/admin/?sortby={{sortby}}&page={{i}}');">{{i}}</button>
+		{% endfor %}
+	</div>
+		
+	{% if surveys|length > 0 %}
+		<div class="table-responsive-sm">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						{% for key, value in surveys.0 %}
+							<th><span title="kliknij aby posortować" style="cursor: pointer;" onclick="window.location.replace('/admin/?sortby={{key}}&page={{page}}');">
+								{{key}}
+								{% if key == sortby %}
+									[sort rosnący]
+								{% endif %}
+							</span></th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+					{% for srv in surveys %}
+						<tr>
+							{% for value in srv %}
+								<td>{{value}}</td>
 							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			{% endif %}
+						</tr>	
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
-	</body>
-</html>
+	{% endif %}
+{% endblock %}
