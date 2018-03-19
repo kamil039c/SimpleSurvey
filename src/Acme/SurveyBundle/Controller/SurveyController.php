@@ -100,7 +100,7 @@ class SurveyController extends Controller {
 		}
 		
 		$em = $this->getDoctrine()->getManager();
-		$query = $em->createQuery("SELECT u FROM User u WHERE u.name = ?1");
+		$query = $em->createQuery("SELECT u FROM App\Acme\SurveyBundle\Entity\User u WHERE u.name = ?1");
 		$query->setParameter(1, $form['name']);
 		$user = $query->getResult();
 		
